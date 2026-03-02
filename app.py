@@ -30,4 +30,7 @@ elif menu == "View Assets":
 elif menu == "Blockchain Ledger":
     st.subheader("Blockchain Ledger")
     ledger = load_data("data/ledger.json")
-    st.json(ledger)
+    if len(ledger) == 0:
+        st.warning("No blocks yet")
+    else:
+        st.json(ledger)
