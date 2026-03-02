@@ -1,5 +1,10 @@
 import streamlit as st
-from asset_manager import register_asset, load_data
+from asset_manager import (
+    register_asset,
+    load_data,
+    tokenize_asset,
+    transfer_token
+)
 from blockchain import load_ledger
 
 st.set_page_config(page_title="Asset Tokenization Blockchain")
@@ -8,7 +13,14 @@ st.title("🔗 Blockchain Asset Tokenization System")
 
 menu = st.sidebar.selectbox(
     "Menu",
-    ["Register Asset", "View Assets", "Blockchain Ledger"]
+    [
+        "Register Asset",
+        "View Assets",
+        "Tokenize Asset",
+        "View Tokens",
+        "Transfer Token",
+        "Blockchain Ledger"
+    ]
 )
 
 if menu == "Register Asset":
@@ -34,6 +46,51 @@ elif menu == "View Assets":
     else:
         st.json(assets)
 
+elif menu == "Tokenize Asset":
+    st.subheader("Tokenize Asset")
+
+    assets = load_data("data/assets.json")
+
+    if len(assets) == 0:
+        st.warning("No assets available")
+    else:
+        asset_ids = [a["asset_id"] for a in assets]
+        asset_id = st.selectbox("Select Asset ID", asset_ids)
+        owner = st.text_input("Owner Name")
+        total_tokens = st.number_input("Number of Tokens", min_value=1)
+
+        if st.button("Tokenize"):
+            tokenize_asset(asset_id, total_tokens, owner)
+            st.success("Asset tokenized successfully")
+
+elif menu == "View Tokens":
+    st.subheader("Tokenized Assets")
+    tokens = load_data("data/tokens.json")
+
+    if len(tokens) == 0:
+        st.info("No tokens created yet")
+    else:
+        st.json(tokens)
+
+elif menu == "Transfer Token":
+    st.subheader("Transfer Token Ownership")
+
+    tokens = load_data("data/tokens.json")
+
+    if len(tokens) == 0:
+        st.warning("No tokens available")
+    else:
+        token_ids = [t["token_id"] for t in tokens]
+        token_id = st.selectbox("Select Token ID", token_ids)
+        new_owner = st.text_input("New Owner Name")
+
+        if st.button("Transfer"):
+            success = transfer_token(token_id, new_owner)
+            if success:
+                st.success("Token transferred successfully")
+            else:
+                st.error("Transfer failed")
+                
 elif menu == "Blockchain Ledger":
     st.subheader("Blockchain Ledger")
     ledger = load_ledger()
