@@ -1,5 +1,8 @@
 import json
 import uuid
+from blockchain import add_block
+
+ASSET_FILE = "data/assets.json"
 
 def load_data(file):
     try:
@@ -13,13 +16,24 @@ def save_data(file, data):
         json.dump(data, f, indent=4)
 
 def register_asset(name, owner, value):
-    assets = load_data("data/assets.json")
+    assets = load_data(ASSET_FILE)
+
     asset_id = str(uuid.uuid4())
-    assets.append({
+
+    asset = {
         "asset_id": asset_id,
         "name": name,
         "owner": owner,
         "value": value
+    }
+
+    assets.append(asset)
+    save_data(ASSET_FILE, assets)
+
+    # 🔗 ADD TO BLOCKCHAIN
+    add_block({
+        "action": "ASSET_REGISTERED",
+        "asset": asset
     })
-    save_data("data/assets.json", assets)
+
     return asset_id
