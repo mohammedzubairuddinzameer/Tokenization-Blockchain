@@ -1,11 +1,12 @@
 import streamlit as st
 from asset_manager import (
     register_asset,
-    load_data,
+    get_assets,
     tokenize_asset,
+    get_tokens,
     transfer_token
 )
-from blockchain import load_ledger
+from blockchain import get_ledger
 
 st.set_page_config(page_title="Asset Tokenization Blockchain")
 
@@ -49,7 +50,7 @@ elif menu == "View Assets":
 elif menu == "Tokenize Asset":
     st.subheader("Tokenize Asset")
 
-    assets = load_data("data/assets.json")
+    assets = get_assets()
 
     if len(assets) == 0:
         st.warning("No assets available")
@@ -65,7 +66,7 @@ elif menu == "Tokenize Asset":
 
 elif menu == "View Tokens":
     st.subheader("Tokenized Assets")
-    tokens = load_data("data/tokens.json")
+    tokens = get_tokens()
 
     if len(tokens) == 0:
         st.info("No tokens created yet")
@@ -75,7 +76,7 @@ elif menu == "View Tokens":
 elif menu == "Transfer Token":
     st.subheader("Transfer Token Ownership")
 
-    tokens = load_data("data/tokens.json")
+    tokens = get_tokens()
 
     if len(tokens) == 0:
         st.warning("No tokens available")
@@ -93,7 +94,7 @@ elif menu == "Transfer Token":
                 
 elif menu == "Blockchain Ledger":
     st.subheader("Blockchain Ledger")
-    ledger = load_ledger()
+    ledger = get_ledger()
     if len(ledger) == 0:
         st.info("Blockchain ledger is empty.")
     else:
