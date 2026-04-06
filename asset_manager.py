@@ -1,34 +1,18 @@
-import json
+from db import supabase
 import uuid
 from blockchain import add_block
 
-ASSET_FILE = "data/assets.json"
-TOKEN_FILE = "data/tokens.json"
-
-def load_data(file):
-    try:
-        with open(file, "r") as f:
-            return json.load(f)
-    except:
-        return []
-
-def save_data(file, data):
-    with open(file, "w") as f:
-        json.dump(data, f, indent=4)
-
 def register_asset(name, owner, value):
-    assets = load_data(ASSET_FILE)
-
     asset_id = str(uuid.uuid4())
+
     asset = {
-        "asset_id": asset_id,
+        "id": asset_id,
         "name": name,
         "owner": owner,
         "value": value
     }
 
-    assets.append(asset)
-    save_data(ASSET_FILE, assets)
+    supabase.table("assets").insert(asset).execute()
 
     add_block({
         "action": "ASSET_REGISTERED",
@@ -37,8 +21,14 @@ def register_asset(name, owner, value):
 
     return asset_id
 
+
+def get_assets():
+    response = supabase.table("assets").select("*").execute()
+    return response.data
+
+
 def tokenize_asset(asset_id, total_tokens, owner):
-    tokens = load_data(TOKEN_FILE)
+    tokens = []
 
     for i in range(total_tokens):
         tokens.append({
@@ -48,23 +38,29 @@ def tokenize_asset(asset_id, total_tokens, owner):
             "percentage": round(100 / total_tokens, 2)
         })
 
-    save_data(TOKEN_FILE, tokens)
+    supabase.table("tokens").insert(tokens).execute()
 
     add_block({
         "action": "ASSET_TOKENIZED",
-        "asset_id": asset_id,
-        "total_tokens": total_tokens
+        "asset_id": asset_id
     })
 
+
+def get_tokens():
+    response = supabase.table("tokens").select("*").execute()
+    return response.data
+
+
 def transfer_token(token_id, new_owner):
-    tokens = load_data(TOKEN_FILE)
+    tokens = get_tokens()
 
     for token in tokens:
         if token["token_id"] == token_id:
             old_owner = token["owner"]
-            token["owner"] = new_owner
 
-            save_data(TOKEN_FILE, tokens)
+            supabase.table("tokens").update({
+                "owner": new_owner
+            }).eq("token_id", token_id).execute()
 
             add_block({
                 "action": "TOKEN_TRANSFER",
@@ -72,6 +68,7 @@ def transfer_token(token_id, new_owner):
                 "from": old_owner,
                 "to": new_owner
             })
+
             return True
 
     return False
