@@ -35,7 +35,7 @@ if menu == "Register Asset":
         if name and owner and value > 0:
             asset_id = register_asset(name, owner, value)
             st.success(f"Asset registered successfully!")
-            st.code(asset_id)
+            st.code(id)
         else:
             st.warning("Please fill all fields correctly.")
 
@@ -55,7 +55,7 @@ elif menu == "Tokenize Asset":
     if len(assets) == 0:
         st.warning("No assets available")
     else:
-        asset_ids = [a["asset_id"] for a in assets]
+        asset_ids = [a["id"] for a in assets]
         asset_id = st.selectbox("Select Asset ID", asset_ids)
         owner = st.text_input("Owner Name")
         total_tokens = st.number_input("Number of Tokens", min_value=1)
