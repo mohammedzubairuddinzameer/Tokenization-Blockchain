@@ -41,7 +41,7 @@ if menu == "Register Asset":
 
 elif menu == "View Assets":
     st.subheader("Registered Assets")
-    assets = load_data("data/assets.json")
+    assets = get_assets()
     if len(assets) == 0:
         st.info("No assets registered yet.")
     else:
