@@ -25,31 +25,77 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+# Initialize session
+if "role" not in st.session_state:
+    st.session_state.role = None
+
+if st.session_state.role is None:
+    st.title("🔐 Login")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        if username == "admin" and password == "admin123":
+            st.session_state.role = "admin"
+            st.success("Logged in as Admin")
+            st.rerun()
+
+        elif username == "user" and password == "user123":
+            st.session_state.role = "user"
+            st.success("Logged in as User")
+            st.rerun()
+
+        else:
+            st.error("Invalid credentials")
+
+    st.stop()
+st.sidebar.write(f"Logged in as: {st.session_state.role}")
+
+if st.sidebar.button("Logout"):
+    st.session_state.role = None
+    st.rerun()    
 def format_timestamp(ts):
     ist = pytz.timezone("Asia/Kolkata")
     return datetime.fromtimestamp(ts, ist).strftime("%d-%m-%Y %H:%M:%S")
     
-menu = st.sidebar.selectbox(
-    "Menu",
-    [
-        "Register Asset",
-        "View Assets",
-        "Tokenize Asset",
-        "View Tokens",
-        "Transfer Token",
-        "Blockchain Ledger",
-        "Validate Blockchain" 
-    ]
-)
+if st.session_state.role == "admin":
+    menu = st.sidebar.selectbox(
+        "Menu",
+        [
+            "Register Asset",
+            "View Assets",
+            "Tokenize Asset",
+            "View Tokens",
+            "Transfer Token",
+            "Blockchain Ledger",
+            "Validate Blockchain"
+        ]
+    )
 
+else:  # user
+    menu = st.sidebar.selectbox(
+        "Menu",
+        [
+            "View Assets",
+            "View Tokens",
+            "Blockchain Ledger"
+        ]
+    )
+    
 if menu == "Register Asset":
     st.subheader("Register New Asset")
 
     name = st.text_input("Asset Name")
     owner = st.text_input("Owner Name")
     value = st.number_input("Asset Value", min_value=0)
-
+    
     if st.button("Register Asset"):
+        if menu == "Register Asset":
+            if st.session_state.role != "admin":
+                st.error("Access Denied")
+                st.stop()
         if name and owner and value > 0:
             asset_id = register_asset(name, owner, value)
             st.success(f"Asset registered successfully!")
@@ -69,7 +115,11 @@ elif menu == "Tokenize Asset":
     st.subheader("Tokenize Asset")
 
     assets = get_assets()
-
+    if menu == "Tokenize Asset":
+        if st.session_state.role != "admin":
+            st.error("Access Denied")
+            st.stop()
+            
     if len(assets) == 0:
         st.warning("No assets available")
     else:
@@ -95,7 +145,10 @@ elif menu == "Transfer Token":
     st.subheader("Transfer Token Ownership")
 
     tokens = get_tokens()
-
+    if menu == "Transfer Token":
+        if st.session_state.role != "admin":
+            st.error("Access Denied")
+            st.stop()
     if len(tokens) == 0:
         st.warning("No tokens available")
     else:
