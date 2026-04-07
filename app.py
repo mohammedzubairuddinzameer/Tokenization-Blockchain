@@ -6,7 +6,7 @@ from asset_manager import (
     get_tokens,
     transfer_token
 )
-from blockchain import get_ledger
+from blockchain import get_ledger, validate_blockchain
 
 st.set_page_config(page_title="Asset Tokenization Blockchain")
 
@@ -20,7 +20,8 @@ menu = st.sidebar.selectbox(
         "Tokenize Asset",
         "View Tokens",
         "Transfer Token",
-        "Blockchain Ledger"
+        "Blockchain Ledger",
+        "Validate Blockchain" 
     ]
 )
 
@@ -99,3 +100,14 @@ elif menu == "Blockchain Ledger":
         st.info("Blockchain ledger is empty.")
     else:
         st.json(ledger)
+
+elif menu == "Validate Blockchain":
+    st.subheader("🔍 Blockchain Validation")
+
+    if st.button("Check Integrity"):
+        valid, message = validate_blockchain()
+
+        if valid:
+            st.success(message)
+        else:
+            st.error(message)
