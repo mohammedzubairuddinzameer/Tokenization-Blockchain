@@ -30,3 +30,30 @@ def add_block(data):
 def get_ledger():
     response = supabase.table("ledger").select("*").execute()
     return response.data
+
+def validate_blockchain():
+    ledger = get_ledger()
+
+    if not ledger:
+        return True, "Blockchain is empty"
+
+    for i in range(1, len(ledger)):
+        current = ledger[i]
+        previous = ledger[i - 1]
+
+        # Recalculate hash
+        recalculated_hash = calculate_hash({
+            "data": current["data"],
+            "previous_hash": current["previous_hash"],
+            "timestamp": current["timestamp"]
+        })
+
+        # Check hash integrity
+        if current["hash"] != recalculated_hash:
+            return False, f"Block {i} has been tampered!"
+
+        # Check chain linkage
+        if current["previous_hash"] != previous["hash"]:
+            return False, f"Chain broken at block {i}!"
+
+    return True, "Blockchain is valid"
