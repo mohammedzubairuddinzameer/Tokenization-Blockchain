@@ -14,6 +14,17 @@ st.set_page_config(page_title="Asset Tokenization Blockchain")
 
 st.title("🔗 Blockchain Asset Tokenization System")
 
+st.markdown("""
+<style>
+.block-card {
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #0e1117;
+    border: 1px solid #444;
+    margin-bottom: 15px;
+}
+</style>
+""", unsafe_allow_html=True)
 def format_timestamp(ts):
     ist = pytz.timezone("Asia/Kolkata")
     return datetime.fromtimestamp(ts, ist).strftime("%d-%m-%Y %H:%M:%S")
@@ -100,20 +111,36 @@ elif menu == "Transfer Token":
                 st.error("Transfer failed")
                 
 elif menu == "Blockchain Ledger":
-    st.subheader("Blockchain Ledger")
+    st.subheader("🔗 Blockchain Explorer")
+
     ledger = get_ledger()
-    if len(ledger) == 0:
-        st.info("Blockchain ledger is empty.")
+
+    if not ledger:
+        st.info("No blocks in blockchain yet.")
     else:
-        for block in ledger:
-            st.write("### Block")
-        
-            st.write("Time:", format_timestamp(block["timestamp"]))
-            st.write("Previous Hash:", block["previous_hash"])
-            st.write("Hash:", block["hash"])
-            st.write("Data:", block["data"])
-        
-            st.divider()
+        for i, block in enumerate(ledger):
+            with st.container():
+                if i == 0:
+                    st.markdown("## 🟢 Genesis Block")
+                else:
+                    st.markdown(f"## 🔵 Block {i}")
+
+                st.subheader("🔗 Chain Flow")
+
+                chain = " → ".join([f"Block {i}" for i in range(len(ledger))])
+                st.success(chain)
+                st.write("🕒 Time:", format_timestamp(block["timestamp"]))
+
+                st.write("📦 Data:")
+                st.json(block["data"])
+
+                st.write("🔗 Previous Hash:")
+                st.code(block["previous_hash"])
+
+                st.write("🔐 Current Hash:")
+                st.code(block["hash"])
+
+                st.divider()
 
 elif menu == "Validate Blockchain":
     st.subheader("🔍 Blockchain Validation")
