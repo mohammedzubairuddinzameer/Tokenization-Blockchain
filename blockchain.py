@@ -21,7 +21,7 @@ def add_block(data):
     block = {
         "data": data,
         "previous_hash": previous_hash,
-        "timestamp": round(time.time(), 6)  # fix precision
+        "timestamp": time.time()
     }
 
     # calculate hash ONLY on this structure
