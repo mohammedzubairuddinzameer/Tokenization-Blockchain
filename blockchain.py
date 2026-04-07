@@ -37,23 +37,26 @@ def validate_blockchain():
     if not ledger:
         return True, "Blockchain is empty"
 
-    for i in range(1, len(ledger)):
+    for i in range(len(ledger)):
         current = ledger[i]
-        previous = ledger[i - 1]
 
-        # Recalculate hash
-        recalculated_hash = calculate_hash({
+        # Recreate block WITHOUT hash field
+        block_copy = {
             "data": current["data"],
             "previous_hash": current["previous_hash"],
             "timestamp": current["timestamp"]
-        })
+        }
+
+        recalculated_hash = calculate_hash(block_copy)
 
         # Check hash integrity
         if current["hash"] != recalculated_hash:
             return False, f"Block {i} has been tampered!"
 
-        # Check chain linkage
-        if current["previous_hash"] != previous["hash"]:
-            return False, f"Chain broken at block {i}!"
+        # Check chain linkage (skip genesis block)
+        if i > 0:
+            previous = ledger[i - 1]
+            if current["previous_hash"] != previous["hash"]:
+                return False, f"Chain broken at block {i}!"
 
     return True, "Blockchain is valid"
