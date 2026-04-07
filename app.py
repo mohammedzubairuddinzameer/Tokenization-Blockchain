@@ -7,11 +7,17 @@ from asset_manager import (
     transfer_token
 )
 from blockchain import get_ledger, validate_blockchain
+from datetime import datetime
+import pytz
 
 st.set_page_config(page_title="Asset Tokenization Blockchain")
 
 st.title("🔗 Blockchain Asset Tokenization System")
 
+def format_timestamp(ts):
+    ist = pytz.timezone("Asia/Kolkata")
+    return datetime.fromtimestamp(ts, ist).strftime("%d-%m-%Y %H:%M:%S")
+    
 menu = st.sidebar.selectbox(
     "Menu",
     [
@@ -99,7 +105,15 @@ elif menu == "Blockchain Ledger":
     if len(ledger) == 0:
         st.info("Blockchain ledger is empty.")
     else:
-        st.json(ledger)
+        for block in ledger:
+            st.write("### Block")
+        
+            st.write("Time:", format_timestamp(block["timestamp"]))
+            st.write("Previous Hash:", block["previous_hash"])
+            st.write("Hash:", block["hash"])
+            st.write("Data:", block["data"])
+        
+            st.divider()
 
 elif menu == "Validate Blockchain":
     st.subheader("🔍 Blockchain Validation")
