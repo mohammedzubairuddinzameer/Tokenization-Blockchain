@@ -17,15 +17,25 @@ def add_block(data):
 
     previous_hash = last_block["hash"] if last_block else "0"
 
+    # 🔥 STANDARD STRUCTURE (ONLY THESE FIELDS)
     block = {
         "data": data,
         "previous_hash": previous_hash,
-        "timestamp": time.time()
+        "timestamp": round(time.time(), 6)  # fix precision
     }
 
-    block["hash"] = calculate_hash(block)
+    # calculate hash ONLY on this structure
+    block_hash = calculate_hash(block)
 
-    supabase.table("ledger").insert(block).execute()
+    # store clean block + hash
+    db_block = {
+        "data": block["data"],
+        "previous_hash": block["previous_hash"],
+        "timestamp": block["timestamp"],
+        "hash": block_hash
+    }
+
+    supabase.table("ledger").insert(db_block).execute()
 
 def get_ledger():
     response = supabase.table("ledger").select("*").execute()
@@ -40,19 +50,18 @@ def validate_blockchain():
     for i in range(len(ledger)):
         current = ledger[i]
 
-        # Create a copy of block and remove hash field
-        block_copy = current.copy()
-        block_copy.pop("hash", None)
-        block_copy.pop("id", None)          # remove DB auto fields
-        block_copy.pop("created_at", None)  # if exists
+        # 🔥 Recreate EXACT SAME STRUCTURE
+        block = {
+            "data": current["data"],
+            "previous_hash": current["previous_hash"],
+            "timestamp": current["timestamp"]
+        }
 
-        recalculated_hash = calculate_hash(block_copy)
+        recalculated_hash = calculate_hash(block)
 
-        # Check hash integrity
         if current["hash"] != recalculated_hash:
             return False, f"Block {i} has been tampered!"
 
-        # Check chain linkage (skip genesis)
         if i > 0:
             previous = ledger[i - 1]
             if current["previous_hash"] != previous["hash"]:
