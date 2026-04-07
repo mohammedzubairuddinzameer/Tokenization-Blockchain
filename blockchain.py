@@ -40,16 +40,11 @@ def validate_blockchain():
     for i in range(len(ledger)):
         current = ledger[i]
 
-        # Skip hash check for Genesis block
-        if i == 0:
-            continue
-
-        # Recreate block structure (without hash)
-        block_copy = {
-            "data": current["data"],
-            "previous_hash": current["previous_hash"],
-            "timestamp": current["timestamp"]
-        }
+        # Create a copy of block and remove hash field
+        block_copy = current.copy()
+        block_copy.pop("hash", None)
+        block_copy.pop("id", None)          # remove DB auto fields
+        block_copy.pop("created_at", None)  # if exists
 
         recalculated_hash = calculate_hash(block_copy)
 
@@ -57,9 +52,10 @@ def validate_blockchain():
         if current["hash"] != recalculated_hash:
             return False, f"Block {i} has been tampered!"
 
-        # Check chain linkage
-        previous = ledger[i - 1]
-        if current["previous_hash"] != previous["hash"]:
-            return False, f"Chain broken at block {i}!"
+        # Check chain linkage (skip genesis)
+        if i > 0:
+            previous = ledger[i - 1]
+            if current["previous_hash"] != previous["hash"]:
+                return False, f"Chain broken at block {i}!"
 
     return True, "Blockchain is valid"
