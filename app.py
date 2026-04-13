@@ -84,7 +84,12 @@ if menu == "Register Asset":
     name = st.text_input("Asset Name")
     owner = st.text_input("Owner Name")
     value = st.number_input("Asset Value", min_value=0)
+    visibility = st.selectbox("Visibility", ["private", "public", "shared"])
+
+    shared_with = ""
     
+    if visibility == "shared":
+        shared_with = st.text_input("Enter usernames (comma separated)")
     if st.button("Register Asset"):
         if menu == "Register Asset":
             if st.session_state.role != "admin":
@@ -95,7 +100,9 @@ if menu == "Register Asset":
                 name,
                 owner,
                 value,
-                st.session_state.user["id"]
+                st.session_state.user["id"],
+                visibility,
+                shared_with
             )
             st.success(f"Asset registered successfully!")
             st.code(id)
@@ -104,7 +111,10 @@ if menu == "Register Asset":
 
 elif menu == "View Assets":
     st.subheader("Registered Assets")
-    assets = get_assets(st.session_state.user["id"])
+    assets = get_assets(
+        st.session_state.user["id"],
+        st.session_state.user["username"]
+    )
     if len(assets) == 0:
         st.info("No assets registered yet.")
     else:
