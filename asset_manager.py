@@ -25,9 +25,24 @@ def register_asset(name, owner, value, user_id, visibility, shared_with):
     return asset_id
 
 
-def get_assets(user_id):
-    response = supabase.table("assets").select("*").eq("user_id", user_id).execute()
-    return response.data
+def get_assets(user_id, username):
+    response = supabase.table("assets").select("*").execute()
+    all_assets = response.data
+
+    visible_assets = []
+
+    for asset in all_assets:
+        if asset["visibility"] == "public":
+            visible_assets.append(asset)
+
+        elif asset["user_id"] == user_id:
+            visible_assets.append(asset)
+
+        elif asset["visibility"] == "shared":
+            if asset["shared_with"] and username in asset["shared_with"]:
+                visible_assets.append(asset)
+
+    return visible_assets
 
 
 def tokenize_asset(asset_id, total_tokens, owner):
