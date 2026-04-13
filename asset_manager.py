@@ -2,14 +2,15 @@ from db import supabase
 import uuid
 from blockchain import add_block
 
-def register_asset(name, owner, value):
+def register_asset(name, owner, value, user_id):
     asset_id = str(uuid.uuid4())
 
     asset = {
         "id": asset_id,
         "name": name,
         "owner": owner,
-        "value": value
+        "value": value,
+        "user_id": user_id   # 🔥 NEW
     }
 
     supabase.table("assets").insert(asset).execute()
@@ -22,8 +23,8 @@ def register_asset(name, owner, value):
     return asset_id
 
 
-def get_assets():
-    response = supabase.table("assets").select("*").execute()
+def get_assets(user_id):
+    response = supabase.table("assets").select("*").eq("user_id", user_id).execute()
     return response.data
 
 
