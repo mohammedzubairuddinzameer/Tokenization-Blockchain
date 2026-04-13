@@ -32,14 +32,17 @@ def get_assets(user_id, username):
     visible_assets = []
 
     for asset in all_assets:
-        if asset["visibility"] == "public":
+        visibility = asset.get("visibility", "private")
+
+        if visibility == "public":
             visible_assets.append(asset)
 
-        elif asset["user_id"] == user_id:
+        elif asset.get("user_id") == user_id:
             visible_assets.append(asset)
 
-        elif asset["visibility"] == "shared":
-            if asset["shared_with"] and username in asset["shared_with"]:
+        elif visibility == "shared":
+            shared_with = asset.get("shared_with", "")
+            if username in shared_with:
                 visible_assets.append(asset)
 
     return visible_assets
