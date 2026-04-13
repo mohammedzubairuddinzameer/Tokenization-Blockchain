@@ -66,29 +66,17 @@ def format_timestamp(ts):
     ist = pytz.timezone("Asia/Kolkata")
     return datetime.fromtimestamp(ts, ist).strftime("%d-%m-%Y %H:%M:%S")
     
-if st.session_state.role == "admin":
-    menu = st.sidebar.selectbox(
-        "Menu",
-        [
-            "Register Asset",
-            "View Assets",
-            "Tokenize Asset",
-            "View Tokens",
-            "Transfer Token",
-            "Blockchain Ledger",
-            "Validate Blockchain"
-        ]
-    )
-
-else:  # user
-    menu = st.sidebar.selectbox(
-        "Menu",
-        [
-            "View Assets",
-            "View Tokens",
-            "Blockchain Ledger"
-        ]
-    )
+menu = st.sidebar.selectbox(
+    "Menu",
+    [
+        "Register Asset",
+        "View Assets",
+        "Tokenize Asset",
+        "View Tokens",
+        "Transfer Token",
+        "Blockchain Ledger"
+    ]
+)
     
 if menu == "Register Asset":
     st.subheader("Register New Asset")
