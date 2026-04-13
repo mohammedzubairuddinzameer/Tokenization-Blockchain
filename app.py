@@ -26,35 +26,41 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session
-if "role" not in st.session_state:
-    st.session_state.role = None
+from auth import signup, login
 
-if st.session_state.role is None:
-    st.title("🔐 Login")
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+
+if st.session_state.user is None:
+    st.title("🔐 Login / Signup")
+
+    option = st.radio("Select Option", ["Login", "Signup"])
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
-    if st.button("Login"):
-        if username == "admin" and password == "admin123":
-            st.session_state.role = "admin"
-            st.success("Logged in as Admin")
-            st.rerun()
+    if option == "Signup":
+        if st.button("Create Account"):
+            user_id = signup(username, password)
+            st.success("Account created. Please login.")
 
-        elif username == "user" and password == "user123":
-            st.session_state.role = "user"
-            st.success("Logged in as User")
-            st.rerun()
+    else:
+        if st.button("Login"):
+            user = login(username, password)
 
-        else:
-            st.error("Invalid credentials")
+            if user:
+                st.session_state.user = user
+                st.success("Login successful")
+                st.rerun()
+            else:
+                st.error("Invalid credentials")
 
     st.stop()
-st.sidebar.write(f"Logged in as: {st.session_state.role}")
+st.sidebar.write(f"Logged in as: {st.session_state.user['username']}")
 
 if st.sidebar.button("Logout"):
-    st.session_state.role = None
+    st.session_state.user = None
     st.rerun()    
 def format_timestamp(ts):
     ist = pytz.timezone("Asia/Kolkata")
@@ -97,7 +103,12 @@ if menu == "Register Asset":
                 st.error("Access Denied")
                 st.stop()
         if name and owner and value > 0:
-            asset_id = register_asset(name, owner, value)
+            asset_id = register_asset(
+                name,
+                owner,
+                value,
+                st.session_state.user["id"]
+            )
             st.success(f"Asset registered successfully!")
             st.code(id)
         else:
@@ -105,7 +116,7 @@ if menu == "Register Asset":
 
 elif menu == "View Assets":
     st.subheader("Registered Assets")
-    assets = get_assets()
+    assets = get_assets(st.session_state.user["id"])
     if len(assets) == 0:
         st.info("No assets registered yet.")
     else:
@@ -114,7 +125,7 @@ elif menu == "View Assets":
 elif menu == "Tokenize Asset":
     st.subheader("Tokenize Asset")
 
-    assets = get_assets()
+    assets = get_assets(st.session_state.user["id"])
     if menu == "Tokenize Asset":
         if st.session_state.role != "admin":
             st.error("Access Denied")
