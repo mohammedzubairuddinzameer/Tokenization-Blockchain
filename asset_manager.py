@@ -1,7 +1,12 @@
 from db import supabase
 import uuid
 from blockchain import add_block
+import hashlib
 
+def generate_file_hash(file):
+    file_bytes = file.read()
+    return hashlib.sha256(file_bytes).hexdigest()
+    
 def register_asset(name, owner, value, user_id, visibility, shared_with):
     asset_id = str(uuid.uuid4())
 
