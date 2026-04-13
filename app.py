@@ -84,6 +84,7 @@ if menu == "Register Asset":
     name = st.text_input("Asset Name")
     owner = st.text_input("Owner Name")
     value = st.number_input("Asset Value", min_value=0)
+    uploaded_file = st.file_uploader("Upload Document", type=["pdf", "png", "jpg"])
     visibility = st.selectbox("Visibility", ["private", "public", "shared"])
 
     shared_with = ""
@@ -91,6 +92,10 @@ if menu == "Register Asset":
     if visibility == "shared":
         shared_with = st.text_input("Enter usernames (comma separated)")
     if st.button("Register Asset"):
+        file_hash = None
+
+        if uploaded_file:
+            file_hash = generate_file_hash(uploaded_file)
         if name and owner and value > 0:
             asset_id = register_asset(
                 name,
@@ -98,7 +103,8 @@ if menu == "Register Asset":
                 value,
                 st.session_state.user["id"],
                 visibility,
-                shared_with
+                shared_with,
+                file_hash
             )
             st.success(f"Asset registered successfully!")
             st.code(id)
