@@ -7,7 +7,7 @@ def generate_file_hash(file):
     file_bytes = file.read()
     return hashlib.sha256(file_bytes).hexdigest()
     
-def register_asset(name, owner, value, user_id, visibility, shared_with):
+def register_asset(name, owner, value, user_id, visibility, shared_with, file_hash):
     asset_id = str(uuid.uuid4())
 
     asset = {
@@ -17,7 +17,8 @@ def register_asset(name, owner, value, user_id, visibility, shared_with):
         "value": value,
         "user_id": user_id,
         "visibility": visibility,
-        "shared_with": shared_with
+        "shared_with": shared_with,
+        "document_hash": file_hash
     }
 
     supabase.table("assets").insert(asset).execute()
