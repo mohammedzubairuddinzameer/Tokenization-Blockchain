@@ -119,11 +119,10 @@ elif menu == "View Assets":
 elif menu == "Tokenize Asset":
     st.subheader("Tokenize Asset")
 
-    assets = get_assets(st.session_state.user["id"])
-    if menu == "Tokenize Asset":
-        if st.session_state.role != "admin":
-            st.error("Access Denied")
-            st.stop()
+    assets = get_assets(
+        st.session_state.user["id"],
+        st.session_state.user["username"]
+    )
             
     if len(assets) == 0:
         st.warning("No assets available")
