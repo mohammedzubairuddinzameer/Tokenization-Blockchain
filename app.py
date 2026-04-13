@@ -74,7 +74,8 @@ menu = st.sidebar.selectbox(
         "Tokenize Asset",
         "View Tokens",
         "Transfer Token",
-        "Blockchain Ledger"
+        "Blockchain Ledger",
+        "Verify Document"
     ]
 )
     
@@ -117,6 +118,12 @@ elif menu == "View Assets":
         st.session_state.user["id"],
         st.session_state.user["username"]
     )
+    for asset in assets:
+    st.write("Asset:", asset["name"])
+    st.write("Owner:", asset["owner"])
+    st.write("Hash:", asset.get("document_hash"))
+    st.divider()
+    
     if len(assets) == 0:
         st.info("No assets registered yet.")
     else:
@@ -203,6 +210,32 @@ elif menu == "Blockchain Ledger":
 
 elif menu == "Validate Blockchain":
     st.subheader("🔍 Blockchain Validation")
+
+elif menu == "Verify Document":
+    st.subheader("Verify Document")
+
+    file = st.file_uploader("Upload file to verify")
+
+    if file:
+        new_hash = generate_file_hash(file)
+
+        st.write("Generated Hash:", new_hash)
+
+        assets = get_assets(
+            st.session_state.user["id"],
+            st.session_state.user["username"]
+        )
+
+        found = False
+
+        for asset in assets:
+            if asset.get("document_hash") == new_hash:
+                st.success("✅ Document is authentic")
+                found = True
+                break
+
+        if not found:
+            st.error("❌ Document not found / tampered")
 
     if st.button("Check Integrity"):
         valid, message = validate_blockchain()
