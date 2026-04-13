@@ -2,7 +2,7 @@ from db import supabase
 import uuid
 from blockchain import add_block
 
-def register_asset(name, owner, value, user_id):
+def register_asset(name, owner, value, user_id, visibility, shared_with):
     asset_id = str(uuid.uuid4())
 
     asset = {
@@ -10,7 +10,9 @@ def register_asset(name, owner, value, user_id):
         "name": name,
         "owner": owner,
         "value": value,
-        "user_id": user_id   # 🔥 NEW
+        "user_id": user_id,
+        "visibility": visibility,
+        "shared_with": shared_with
     }
 
     supabase.table("assets").insert(asset).execute()
