@@ -114,20 +114,21 @@ if menu == "Register Asset":
 
 elif menu == "View Assets":
     st.subheader("Registered Assets")
+
     assets = get_assets(
         st.session_state.user["id"],
         st.session_state.user["username"]
     )
-    for asset in assets:
-    st.write("Asset:", asset["name"])
-    st.write("Owner:", asset["owner"])
-    st.write("Hash:", asset.get("document_hash"))
-    st.divider()
-    
+
     if len(assets) == 0:
         st.info("No assets registered yet.")
     else:
-        st.json(assets)
+        for asset in assets:
+            st.write("📦 Asset:", asset["name"])
+            st.write("👤 Owner:", asset["owner"])
+            st.write("💰 Value:", asset["value"])
+            st.write("🔐 Hash:", asset.get("document_hash"))
+            st.divider()
 
 elif menu == "Tokenize Asset":
     st.subheader("Tokenize Asset")
