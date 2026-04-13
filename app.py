@@ -124,9 +124,9 @@ elif menu == "View Assets":
         st.info("No assets registered yet.")
     else:
         for asset in assets:
-            st.write("📦 Asset:", asset["name"])
-            st.write("👤 Owner:", asset["owner"])
-            st.write("💰 Value:", asset["value"])
+            st.markdown(f"### 📦 {asset.get('name')}")
+            st.write("👤 Owner:", asset.get("owner"))
+            st.write("💰 Value:", asset.get("value"))
             st.write("🔐 Hash:", asset.get("document_hash"))
             st.divider()
 
