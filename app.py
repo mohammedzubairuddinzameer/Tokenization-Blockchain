@@ -91,10 +91,6 @@ if menu == "Register Asset":
     if visibility == "shared":
         shared_with = st.text_input("Enter usernames (comma separated)")
     if st.button("Register Asset"):
-        if menu == "Register Asset":
-            if st.session_state.role != "admin":
-                st.error("Access Denied")
-                st.stop()
         if name and owner and value > 0:
             asset_id = register_asset(
                 name,
@@ -154,10 +150,6 @@ elif menu == "Transfer Token":
     st.subheader("Transfer Token Ownership")
 
     tokens = get_tokens()
-    if menu == "Transfer Token":
-        if st.session_state.role != "admin":
-            st.error("Access Denied")
-            st.stop()
     if len(tokens) == 0:
         st.warning("No tokens available")
     else:
