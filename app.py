@@ -7,6 +7,7 @@ from asset_manager import (
     transfer_token
 )
 from blockchain import get_ledger, validate_blockchain
+from asset_manager import generate_file_hash
 from datetime import datetime
 import pytz
 
