@@ -1,45 +1,59 @@
-# Tokenization-Blockchain
-
-# Blockchain-Based Tokenization of Real-World Assets
+# 🔗 Blockchain-Based Tokenization of Real-World Assets
 
 This project demonstrates how **real-world assets** such as property, gold, and certificates can be **digitally tokenized using blockchain principles**.  
-It simulates a blockchain ledger using cryptographic hashing and provides **fractional ownership, transparent transfers, and immutable records**.
+It implements a **blockchain-like ledger**, enabling **fractional ownership, secure transfers, document verification, and user-based access control**.
 
-The application is built using **Python and Streamlit** and deployed as a web application.
-
----
-
-## 🔍 Problem Addressed
-
-Traditional asset management systems are:
-- Centralized
-- Prone to fraud and data manipulation
-- Slow in ownership transfer
-- Difficult to divide into fractional ownership
-
-This project solves these issues by using **blockchain concepts** like decentralization, hashing, and immutable ledgers.
+The application is built using **Python and Streamlit** and uses **Supabase (PostgreSQL)** for persistent cloud storage.
 
 ---
 
-## 🚀 Features
+## 🔍 Problem Statement
 
-- Register real-world assets
-- Tokenize assets into fractional ownership
-- Transfer token ownership
-- Blockchain ledger with hash chaining
-- Genesis block implementation
-- Transparent and verifiable transaction history
-- Streamlit-based interactive UI
-- Cloud deployment ready
+Traditional asset management systems:
+- 📄 Rely on paper-based records  
+- ⚠️ Are prone to fraud and manipulation  
+- 🔒 Use centralized databases (single point of failure)  
+- ⏳ Have slow ownership transfer processes  
+- 🔗 Do not support fractional ownership  
+
+---
+
+## 🚀 Solution
+
+This project solves the above issues using:
+
+- 🔗 Blockchain-based transaction recording  
+- 🔐 Cryptographic hashing (SHA-256)  
+- 👥 Multi-user authentication system  
+- 📦 Asset tokenization for fractional ownership  
+- 🌐 Public / Private / Shared access control  
+- 📁 Document hashing for tamper-proof verification  
+
+---
+
+## ✨ Features
+
+- 👤 User Signup & Login (multi-user system)  
+- 📦 Register real-world assets  
+- 🔗 Tokenize assets into fractional ownership  
+- 🔄 Transfer token ownership securely  
+- 🔐 Upload documents → generate SHA-256 hash  
+- ✅ Verify documents using hash comparison  
+- 🌐 Asset visibility:
+  - Private (owner only)  
+  - Public (all users)  
+  - Shared (specific users)  
+- 📊 Blockchain ledger with hash chaining  
+- ☁️ Persistent cloud storage using Supabase  
 
 ---
 
 ## 🛠️ Technology Stack
 
 - **Python 3**
-- **Streamlit**
+- **Streamlit (Frontend UI)**
+- **Supabase (PostgreSQL Database)**
 - **SHA-256 Cryptographic Hashing**
-- **JSON-based Ledger Storage**
 - **GitHub + Streamlit Cloud**
 
 ---
@@ -49,184 +63,209 @@ This project solves these issues by using **blockchain concepts** like decentral
 
 tokenization-blockchain/
 │
-├── app.py
-├── blockchain.py
-├── asset_manager.py
+├── app.py # Main Streamlit application
+├── asset_manager.py # Asset & token logic
+├── blockchain.py # Blockchain implementation
+├── auth.py # Authentication logic
+├── db.py # Supabase connection
 ├── requirements.txt
 ├── README.md
-│
-└── data/
-├── assets.json
-├── tokens.json
-└── ledger.json
+
 
 ---
 
+## ⚙️ Setup & Installation
 
-## ⚙️ Installation & Setup (Local)
+### 1️⃣ Clone Repository
 
-1. Clone the repository:
-   git clone https://github.com/mohammedzubairuddinzameer/tokenization-blockchain.git
 
-2. Install dependencies:
-    pip install -r requirements.txt
+git clone https://github.com/mohammedzubairuddinzameer/tokenization-blockchain.git
 
-3. Run the application:
-    streamlit run app.py
----
+cd tokenization-blockchain
 
-## 🌐 Deployment (Streamlit Cloud)
-
-1. Push the project to GitHub
-2. Go to https://streamlit.io/cloud
-3. Connect your GitHub repository
-4. Select `app.py` as the main file
-5. Deploy the app
 
 ---
 
-## 🧭 How to Use the Application (With Examples)
+### 2️⃣ Install Dependencies
 
-### 1️⃣ Register Asset
 
-Navigate to **Register Asset** from the sidebar.
+pip install -r requirements.txt
 
-**Example Input:**
-- Asset Name:  
-`2BHK Residential Flat – Mehdipatnam, Hyderabad`
-- Owner Name:  
-`Zubair Khan`
-- Asset Value:  
-`5500000`
-
-**What happens:**
-- A unique Asset ID is generated
-- Asset is stored in `assets.json`
-- A new blockchain block is created for this registration
 
 ---
 
-### 2️⃣ View Assets
+### 3️⃣ Configure Supabase
 
-Navigate to **View Assets**.
+Create tables in Supabase:
 
-**You will see:**
-- Asset ID
-- Asset name
-- Owner
-- Asset value
+#### users
+- id (uuid)
+- username
+- password
 
-This ensures **transparency and verification**.
+#### assets
+- id
+- name
+- owner
+- value
+- user_id
+- visibility
+- shared_with
+- document_hash
 
----
+#### tokens
+- token_id
+- asset_id
+- owner
+- percentage
+- user_id
 
-### 3️⃣ Tokenize Asset
+#### ledger
+- id
+- data
+- previous_hash
+- timestamp
+- hash
 
-Navigate to **Tokenize Asset**.
-
-**Example Input:**
-- Asset ID:  
-(Select from dropdown)
-- Owner Name:  
-`Zubair Khan`
-- Number of Tokens:  
-`10`
-
-**What happens:**
-- Asset is divided into 10 tokens
-- Each token represents **10% ownership**
-- Tokens are stored in `tokens.json`
-- Blockchain records the tokenization event
-
----
-
-### 4️⃣ View Tokens
-
-Navigate to **View Tokens**.
-
-**You will see:**
-- Token ID
-- Asset ID
-- Owner
-- Ownership percentage
-
-This simulates **fractional ownership**.
+👉 Disable Row Level Security (RLS) for all tables
 
 ---
 
-### 5️⃣ Transfer Token Ownership
+### 4️⃣ Add Secrets (Streamlit)
 
-Navigate to **Transfer Token**.
+Go to **Streamlit Cloud → Settings → Secrets**
 
-**Example Input:**
-- Token ID:  
-(Select a token)
-- New Owner Name:  
-`Ayesha Begum`
 
-**What happens:**
-- Ownership of the selected token is transferred
-- A new block is added to the blockchain ledger
-- Transfer history becomes immutable
+SUPABASE_URL = "your_project_url"
+SUPABASE_KEY = "your_anon_key"
+
 
 ---
 
-### 6️⃣ Blockchain Ledger
+### 5️⃣ Run Application
 
-Navigate to **Blockchain Ledger**.
 
-**You will see:**
-- Genesis block
-- Asset registration blocks
-- Tokenization blocks
-- Transfer blocks
-- Hash-linked chain ensuring immutability
+streamlit run app.py
+
+
+Open:
+
+http://localhost:8501
+
 
 ---
 
-## 🔐 Blockchain Principles Implemented
+## 🧭 How to Use
 
-- Cryptographic hashing (SHA-256)
-- Genesis block
-- Hash chaining
-- Immutable ledger
-- Transaction-based record keeping
+### 🔹 1. Signup / Login
+- Create account or login  
+- Each user has isolated data  
+
+---
+
+### 🔹 2. Register Asset
+Example:
+- Name: Residential Plot – Hyderabad  
+- Owner: Zubair  
+- Value: 5000000  
+
+Optional:
+- Upload document → hash generated  
+
+---
+
+### 🔹 3. View Assets
+- See assets based on visibility:
+  - Private  
+  - Public  
+  - Shared  
+
+---
+
+### 🔹 4. Tokenize Asset
+- Divide asset into tokens  
+- Each token = fractional ownership  
+
+---
+
+### 🔹 5. Transfer Tokens
+- Transfer ownership to another user  
+- Blockchain records transaction  
+
+---
+
+### 🔹 6. Verify Document
+- Upload same file → hash matches ✅  
+- Modified file → mismatch ❌  
+
+---
+
+### 🔹 7. Blockchain Ledger
+- View all transactions  
+- Hash-linked chain ensures immutability  
+
+---
+
+## 🔐 Blockchain Concepts Used
+
+- SHA-256 Hashing  
+- Hash Linking  
+- Immutable Ledger  
+- Genesis Block  
+- Transaction Recording  
+
+---
+
+## 📊 Example Workflow
+
+
+User Login
+↓
+Register Asset
+↓
+Upload Document → Generate Hash
+↓
+Store in Database
+↓
+Create Blockchain Block
+↓
+Tokenize Asset
+↓
+Transfer Tokens
+
 
 ---
 
 ## 🎓 Academic Relevance
 
 This project demonstrates:
-- Blockchain fundamentals
-- Asset tokenization
-- Decentralized trust
-- Practical implementation
-- Real-world applicability
-
-Suitable for:
-- Project-based assessment
-- Blockchain technology labs
-- Final-year mini projects
+- Blockchain fundamentals  
+- Asset tokenization  
+- Multi-user system design  
+- Secure data handling  
+- Real-world application of hashing  
 
 ---
 
 ## 🔮 Future Enhancements
 
-- Blockchain validation (tamper detection)
-- Role-based access control
-- Smart contract simulation
-- IPFS-based document storage
-- Visual block explorer
+- 🤖 Smart contracts integration  
+- 🪙 Real blockchain network (Ethereum, etc.)  
+- 📱 Mobile application  
+- 🔐 Password hashing & MFA  
+- 🌍 Government system integration  
+- 📊 Analytics dashboard  
+- ☁️ IPFS-based decentralized storage  
 
 ---
 
 ## 📝 License
 
-This project is developed for **educational purposes only**.
+This project is for **educational purposes only**.
 
 ---
 
 ## 👨‍💻 Author
 
 **Mohammed Zubair Uddin Zameer**  
-Blockchain Technology – Academic Project
+Blockchain Technology Project
